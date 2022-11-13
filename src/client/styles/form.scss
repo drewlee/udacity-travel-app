@@ -23,3 +23,23 @@ input {
     cursor: pointer;
   }
 }
+
+.date-controls {
+  display: flex;
+  flex-direction: column;
+}
+
+.date-controls_input {
+  margin: 5px 0;
+}
+
+/* TABLET & DESKTOP */
+@media (min-width: 768px) {
+  .date-controls {
+    flex-direction: row;
+  }
+
+  .date-controls_input {
+    margin: 0 16px 0 0;
+  }
+}

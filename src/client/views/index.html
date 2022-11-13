@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Amazing Travel App</title>
 </head>
 
@@ -20,23 +21,31 @@
           <legend>Destination</legend>
 
           <label for="trip-attributes_dest-city">City</label>
-          <input id="trip-attributes_dest-city" type="text" placeholder="Bueons Aires" value="" required>
+          <input id="trip-attributes_dest-city" type="text" placeholder="Ex: Bueons Aires" value="" required>
 
           <label for="">Country or State</label>
-          <input id="trip-attributes_dest-country-state" type="text" placeholder="Argentina" value="" required>
+          <input id="trip-attributes_dest-country-state" type="text" placeholder="Ex: Argentina" value="" required>
         </fieldset>
 
         <fieldset>
           <legend>Departure Date</legend>
 
-          <label for="trip-attributes_depart-year">Year</label>
-          <select id="trip-attributes_depart-year"></select>
+          <ul class="date-controls">
+            <li class="date-controls_input">
+              <label for="trip-attributes_depart-year">Year</label>
+              <select id="trip-attributes_depart-year"></select>
+            </li>
 
-          <label for="trip-attributes_depart-month">Month</label>
-          <select id="trip-attributes_depart-month"></select>
+            <li class="date-controls_input">
+              <label for="trip-attributes_depart-month">Month</label>
+              <select id="trip-attributes_depart-month"></select>
+            </li>
 
-          <label for="trip-attributes_depart-day">Day</label>
-          <select id="trip-attributes_depart-day"></select>
+            <li class="date-controls_input">
+              <label for="trip-attributes_depart-day">Day</label>
+              <select id="trip-attributes_depart-day"></select>
+            </li>
+          </ul>
         </fieldset>
 
         <input type="submit" value="Submit">
