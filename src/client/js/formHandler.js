@@ -1,64 +1,132 @@
-import { EMPTY, INVALID_URL } from './constants';
+import { app } from './app';
+import { dateHandler } from './dateHandler';
+import {
+  getCoordinatesForDestination,
+  getWeatherForCoordinates,
+  getImageForDestination,
+  postTripData,
+  fetchTripData,
+} from './services';
+import { ERRORS } from './constants';
+import { renderTripDetails } from './tripDetails';
 
-function handleSubmit(event) {
-    event.preventDefault();
+const { UNEXPECTED, UNKNOWN } = ERRORS;
+const tryLaterMsg = 'Please try again later.';
 
-    const formText = document.getElementById('url').value.trim();
-    const resultsEl = document.getElementById('results');
-    // Check valid URL has been entered
-    const result = Client.checkForURL(formText);
-    const { isValid, reason } = result;
-    let message = '';
+export async function handleSubmit(event) {
+  event.preventDefault();
 
-    if (!isValid) {
-        switch (reason) {
-            case EMPTY:
-                message = 'Input must not be empty.';
-                break;
-            case INVALID_URL:
-                message = 'Please enter a valid URL.';
+  const city = app.cityEl.value.trim();
+  const countryOrState = app.countryOrStateEl.value.trim();
+
+  // Validate fields
+  if (city === '' || countryOrState === '') {
+    alert('Destination must be provided');
+  } else {
+    const destination = `${city},${countryOrState}`;
+    let coordinates;
+
+    // Get coordinates for the provided destination
+    try {
+      coordinates = await getCoordinatesForDestination(destination);
+    } catch (error) {
+      if (error.message === UNEXPECTED) {
+        alert(`Error: ${UNEXPECTED}.\n${tryLaterMsg}`);
+      } else {
+        alert(`${UNKNOWN}.\n${tryLaterMsg}`);
+      }
+
+      console.error(error);
+      return;
+    }
+
+    // Get forecast for the provided coordinates
+    // Forecasts are only available 6 days out w/basic weatherbit plan
+    const hasForecast = dateHandler.isWithinSixDays();
+    let forecast = {
+      temp: null,
+      description: null,
+    };
+
+    if (hasForecast) {
+      try {
+        const { lat, lng } = coordinates;
+        const datestamp = dateHandler.getFormattedDatestamp();
+        forecast = await getWeatherForCoordinates(lat, lng, datestamp);
+      } catch (error) {
+        if (error.message === UNEXPECTED) {
+          alert(`Error: ${UNEXPECTED}.\n${tryLaterMsg}`);
+        } else {
+          alert(`${UNKNOWN}.\n${tryLaterMsg}`);
         }
 
-        resultsEl.innerHTML = `<p class="error">${message}</p>`;
-    } else {
-        console.log('::: Form Submitted :::');
-
-        resultsEl.textContent = 'Loading...';
-
-        fetch('http://localhost:8081/analyze', {
-            method: 'POST',
-            mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                url: formText,
-            }),
-        })
-        .then((res) => {
-            if (!res.ok) {
-                throw new Error('Network response was not OK');
-            }
-            return res.json();
-        })
-        .then((data) => {
-            const { score, sentence, subjectivity } = data;
-
-            if (score && sentence && subjectivity) {
-                resultsEl.innerHTML = `<ul>
-                    <li>Score: ${score}</li>
-                    <li>Sample sentence: ${sentence}</li>
-                    <li>Subjectivity: ${subjectivity}</li>
-                </ul>`;
-            } else {
-                throw new Error('Expected data attributes not found');
-            }
-        })
-        .catch((error) => {
-            console.error(error);
-            resultsEl.innerHTML = '<p class="error">Encountered an unexpected technical error. Please try again later.</p>';
-        });
+        console.error(error);
+        return;
+      }
     }
-}
 
-export { handleSubmit };
+    let imgURLs;
+
+    try {
+      imgURLs = await getImageForDestination(destination);
+    } catch (error) {
+      if (error.message === UNEXPECTED) {
+        alert(`Error: ${UNEXPECTED}.\n${tryLaterMsg}`);
+      } else {
+        alert(`${UNKNOWN}.\n${tryLaterMsg}`);
+      }
+
+      console.error(error);
+      return;
+    }
+
+    const { temp, description } = forecast;
+    const { largeImageURL, webformatURL } = imgURLs;
+    const data = {
+      city,
+      countryOrState,
+      temp,
+      description,
+      largeImageURL,
+      webformatURL,
+      date: dateHandler.getFormattedDate(),
+      daysLeft: dateHandler.getDaysLeft(),
+    };
+
+    // Post and save data to local backend
+    try {
+      await postTripData(data);
+    } catch (error) {
+      if (error.message === UNEXPECTED) {
+        alert(`Error: ${UNEXPECTED}.\n${tryLaterMsg}`);
+      } else {
+        alert(`${UNKNOWN}.\n${tryLaterMsg}`);
+      }
+
+      console.error(error);
+      return;
+    }
+
+    // Reset the form
+    dateHandler.reset();
+    app.setupForm();
+
+    // Get the data from backend and render trip details
+    try {
+      const data = await fetchTripData();
+      const { trip } = data;
+
+      if (trip) {
+        renderTripDetails(trip);
+      }
+    } catch (error) {
+      if (error.message === UNEXPECTED) {
+        alert(`Error: ${UNEXPECTED}.\n${tryLaterMsg}`);
+      } else {
+        alert(`${UNKNOWN}.\n${tryLaterMsg}`);
+      }
+
+      console.error(error);
+    }
+  }
+}

@@ -1,48 +1,67 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-    <head>
-        <meta charset="utf-8">
-        <title>Simple Sentiment Analysis App</title>
-    </head>
 
-    <body>
+<head>
+  <meta charset="utf-8">
+  <title>The Amazing Travel App</title>
+</head>
 
-        <header>
-            <div class="logo">
-                Simple Sentiment Analysis App
-            </div>
-            <nav class="navigation">
-                <a href="https://www.meaningcloud.com/" target="_blank">Meaning Cloud</a>
-            </nav>
-        </header>
+<body>
+  <header>
+    <div class="logo">
+      The Amazing Travel App
+    </div>
+  </header>
 
-        <main>
-            <section>
-                <form onsubmit="return Client.handleSubmit(event);" novalidate>
-                    <input id="url" type="text" name="input" value="" placeholder="URL" required>
-                    <input type="submit" name="submit" value="Submit">
-                </form>
-            </section>
+  <main>
+    <section class="form">
+      <form id="trip-attributes" novalidate>
+        <fieldset>
+          <legend>Destination</legend>
 
-            <section>
-                <strong>Form Results:</strong>
-                <div id="results"></div>
-            </section>
-        </main>
+          <label for="trip-attributes_dest-city">City</label>
+          <input id="trip-attributes_dest-city" type="text" placeholder="Bueons Aires" value="" required>
 
-        <footer>
-            <p>&copy; 2022</p>
-        </footer>
+          <label for="">Country or State</label>
+          <input id="trip-attributes_dest-country-state" type="text" placeholder="Argentina" value="" required>
+        </fieldset>
 
-        <script>
-            // Check that service workers are supported
-            if ('serviceWorker' in navigator) {
-                // Use the window load event to keep the page load performant
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/service-worker.js')
-                        .catch((error) => {});
-                });
-            }
-        </script>
-    </body>
+        <fieldset>
+          <legend>Departure Date</legend>
+
+          <label for="trip-attributes_depart-year">Year</label>
+          <select id="trip-attributes_depart-year"></select>
+
+          <label for="trip-attributes_depart-month">Month</label>
+          <select id="trip-attributes_depart-month"></select>
+
+          <label for="trip-attributes_depart-day">Day</label>
+          <select id="trip-attributes_depart-day"></select>
+        </fieldset>
+
+        <input type="submit" value="Submit">
+      </form>
+    </section>
+
+    <section class="results">
+      <div id="results"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2022</p>
+  </footer>
+
+  <script>
+    // Check that service workers are supported
+    if ('serviceWorker' in navigator) {
+      // Use the window load event to keep the page load performant
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .catch((error) => { });
+      });
+    }
+  </script>
+</body>
+
 </html>

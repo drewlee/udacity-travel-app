@@ -1,15 +1,39 @@
 body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    font: 100% Helvetica, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font: 100% Helvetica, Arial, sans-serif;
 }
 
 main {
-    flex: 2;
+  flex: 2;
 }
 
 section {
-    max-width: 800px;
-    margin: 50px auto;
+  max-width: 800px;
+  margin: 50px auto 0;
+}
+
+.results {
+  border-radius: 3px;
+  margin: 2px auto 20px;
+  background-color: #000;
+  color: #fff;
+  overflow: hidden;
+
+  .container {
+    padding: 10px;
+  }
+
+  img {
+    width: 100%;
+  }
+
+  p {
+    font-size: .875rem;
+  }
+
+  h2, p {
+    margin: 6px 0;
+  }
 }

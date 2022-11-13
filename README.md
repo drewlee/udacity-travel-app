@@ -1,4 +1,4 @@
-# Evaluate a news article with Natural Language Processing
+# FEND Capstone Travel App
 
 ## Table of Contents
 * [Purpose](#purpose)
